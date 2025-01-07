@@ -1,3 +1,8 @@
+# Personal
+dataset
+src/yolo11*
+src/runs
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
