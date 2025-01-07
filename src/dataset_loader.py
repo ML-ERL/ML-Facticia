@@ -45,8 +45,12 @@ def get_dataset_from_file(path:str, training:int=80, seed:int=42):
         shutil.move(path + '/labels/' + file, validation_path + '/labels/' + file)
         
 def clear():
-    shutil.rmtree("../dataset/training")
-    shutil.rmtree("../dataset/validation")
+    
+    if os.path.exists("../dataset/training"):
+        shutil.rmtree("../dataset/training")
+    if os.path.exists("../dataset/validation"):
+        shutil.rmtree("../dataset/validation")
+    
     os.mkdir("../dataset/training")
     os.mkdir("../dataset/training/images")
     os.mkdir("../dataset/training/labels")
