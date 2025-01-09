@@ -3,6 +3,9 @@ dataset
 src/yolo11*
 src/runs
 
+src/detection/img
+src/detection/processed
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
