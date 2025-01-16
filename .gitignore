@@ -2,6 +2,7 @@
 dataset
 src/yolo11*
 src/runs
+src/local_clip
 
 src/detection/img
 src/detection/processed

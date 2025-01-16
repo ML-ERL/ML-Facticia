@@ -1,22 +1,23 @@
-from tensorflow.keras.preprocessing import image
-import tensorflow as tf
-import numpy as np
+# from tensorflow.keras.preprocessing import image
+# import tensorflow as tf
 
-class Image2VecKeras:
+# class Image2VecKeras:
     
-    def __init__(self):
-        self.model = tf.keras.applications.MobileNet(weights='imagenet', include_top=False, pooling='avg')
+#     def __init__(self):
+#         self.model = tf.keras.applications.MobileNet(weights='imagenet', include_top=False, pooling='avg')
         
-    def extract_features(self, image_path, target_size=(420, 420)):
-        img = image.load_img(image_path, target_size=target_size)
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = tf.keras.applications.mobilenet.preprocess_input(img_array)
+#     def extract_features(self, image_path, target_size=(420, 420)):
+#         img = image.load_img(image_path, target_size=target_size)
+#         img_array = image.img_to_array(img)
+#         img_array = np.expand_dims(img_array, axis=0)
+#         img_array = tf.keras.applications.mobilenet.preprocess_input(img_array)
         
-        features = self.model.predict(img_array)
-        return features.flatten()
+#         features = self.model.predict(img_array)
+#         return features.flatten()
     
+import numpy as np
 import cv2
+
 class Image2VecOpenCV:
     
     def __init__(self):
