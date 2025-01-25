@@ -33,8 +33,7 @@ class CLIPInstance:
     def get_relation(self, image_path, texts):
         image = Image.open(image_path)
         
-        # inputs = self.processor(text=text, images=image, return_tensors=True)
-        inputs = self.processor(text=texts, images=image, return_tensors='pt', padding=True)
+        inputs = self.processor(text=texts, images=image, return_tensors='pt', padding=True, truncation=True, max_length=77)
         
         with torch.no_grad():
             outputs = self.model(**inputs)
