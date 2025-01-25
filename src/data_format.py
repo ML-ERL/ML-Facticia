@@ -1,8 +1,8 @@
 class DataFormat:
     
-    def __init__(self, filename, xyhwr, type, text):
+    def __init__(self, filename, xywhr, type, text):
         
         self.filename = filename
-        self.xywhr = xyhwr
+        self.xywhr = xywhr
         self.type = type
         self.text = text
