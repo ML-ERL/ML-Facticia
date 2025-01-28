@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import os
 
 def calculate_corners(x, y, w, h, r):
     x, y, w, h, r = float(x), float(y), float(w), float(h), float(r)
@@ -36,15 +37,14 @@ def calculate_midpoints(corners):
 def calculate_distance(p1, p2):
     return np.linalg.norm(p1 - p2)
 
-def associate_bounding_boxes(images, captions):
-    associations = []
+def associate_bounding_boxes(images, captions, max_distance):
+    associations = {}
 
     for img in images:
         img_corners = calculate_corners(img['x'], img['y'], img['w'], img['h'], img['r'])
         img_midpoints = calculate_midpoints(img_corners)
 
-        closest_caption = None
-        min_distance = float('inf')
+        possible_captions = []
 
         for cap in captions:
             cap_corners = calculate_corners(cap['x'], cap['y'], cap['w'], cap['h'], cap['r'])
@@ -59,28 +59,27 @@ def associate_bounding_boxes(images, captions):
 
             min_cap_distance = min(distances)
 
-            if min_cap_distance < min_distance:
-                closest_caption = cap
-                min_distance = min_cap_distance
+            if min_cap_distance <= max_distance:
+                possible_captions.append({
+                    'caption': cap['filename'],
+                    'text_caption': cap['text'],
+                    'distance': min_cap_distance
+                })
 
-        associations.append({
-            'image': img['filename'],
-            'caption': closest_caption['filename'] if closest_caption else None,
-            'distance': min_distance if closest_caption else None
-        })
+        associations[img['filename']] = possible_captions
 
     return associations
 
 
 
-file_path1 = '/Users/claudia/Downloads/6b3534ea-ohcbh_cf_erl8_217/6b3534ea-ohcbh_cf_erl8_217/6b3534ea-ohcbh_cf_erl8_217.json'  # Reemplaza con la ruta a tu archivo
-file_path2 = '/Users/claudia/Downloads/6b3534ea-ohcbh_cf_erl8_217/07c212d0-ohcbh_cf_erl5_045/07c212d0-ohcbh_cf_erl5_045.json'  # Reemplaza con la ruta a tu archivo
-file_path3 = '/Users/claudia/Downloads/6b3534ea-ohcbh_cf_erl8_217/8199f721-ohcbh_cf_erl5_063/8199f721-ohcbh_cf_erl5_063.json'  # Reemplaza con la ruta a tu archivo
+file_path = '/Users/claudia/Downloads/6b3534ea-ohcbh_cf_erl8_217/6b3534ea-ohcbh_cf_erl8_217/6b3534ea-ohcbh_cf_erl8_217.json'  # Reemplaza con la ruta a tu archivo
+# file_path2 = '/Users/claudia/Downloads/6b3534ea-ohcbh_cf_erl8_217/07c212d0-ohcbh_cf_erl5_045/07c212d0-ohcbh_cf_erl5_045.json'  # Reemplaza con la ruta a tu archivo
+# file_path3 = '/Users/claudia/Downloads/6b3534ea-ohcbh_cf_erl8_217/8199f721-ohcbh_cf_erl5_063/8199f721-ohcbh_cf_erl5_063.json'  # Reemplaza con la ruta a tu archivo
 
-with open(file_path3, "r") as archivo:
+with open(file_path, "r") as archivo:
     data = json.load(archivo)
 
-imagenes = []
+images = []
 captions = []
 
 for key, value in data.items():
@@ -92,9 +91,10 @@ for key, value in data.items():
         w = value.get("w", None)
         h = value.get("h", None)
         r = value.get("r", None)
+        text= value.get("text", None)
         
         if type == 2:  
-            imagenes.append({
+            images.append({
                 "filename": filename,
                 "x": x,
                 "y": y,
@@ -109,14 +109,20 @@ for key, value in data.items():
                 "y": y,
                 "w": w,
                 "h": h,
-                "r": r
+                "r": r,
+                "text": text
             })
 
-max_distance = 250
+max_distance = 465
 
-associations = associate_bounding_boxes(imagenes, captions)
+associations = associate_bounding_boxes(images, captions)
 
-for assoc in associations:
-    if (assoc['caption'] != None):
-        print(f"Imagen: {assoc['image']} -> Caption: {assoc['caption']} (Distancia: {assoc['distance']:.2f})")
+output_file = os.path.basename(file_path)
+with open(output_file, 'w') as out_file:
+    json.dump(associations, out_file, indent=4)
 
+
+for image, associated_captions in associations.items():
+    print(f"Imagen: {image}")
+    for cap in associated_captions:
+        print(f"  - Caption: {cap['caption']} (Distancia: {cap['distance']:.2f})")
