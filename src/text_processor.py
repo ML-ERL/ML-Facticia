@@ -7,16 +7,60 @@ from PIL import Image
 
 pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
+def img_inversion(image):
+    return cv2.bitwise_not(image)
+
+def img_grayscale(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+def img_threshold(image):
+    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
+def img_blur(image):
+    return cv2.medianBlur(image, 5)
+
+def img_noise_removal(image):
+    kernel = np.ones((1, 1), np.uint8)
+    image = cv2.dilate(image, kernel, iterations=1)
+    
+    kernel = np.ones((1, 1), np.uint8)
+    image = cv2.erode(image, kernel, iterations=1)
+    image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+    image = cv2.medianBlur(image, 5)
+    
+    return image
+
+def img_dilation_and_erosion(image):
+    image = cv2.bitwise_not(image)
+    
+    kernel = np.ones((2, 2), np.uint8)
+    image = cv2.erode(image, kernel, iterations=1)
+    
+    kernel = np.ones((2, 2), np.uint8)
+    image = cv2.dilate(image, kernel, iterations=1)
+
+    image = cv2.bitwise_not(image)
+    return image
+
+def img_remove_borders(image):
+    contours, heirarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
+    cnt = cntsSorted[-1]
+    x, y, w, h = cv2.boundingRect(cnt)
+    
+    return image[y:y+h, x:x+w]
+ 
+
 def image_preprocessing(image):
     
     # grayscale image
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = img_grayscale(image)
     
     # noise removal
-    image = cv2.medianBlur(image, 5)
+    image = img_blur(image)
     
     # thresholding
-    _, image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    image = img_threshold(image)
     
     return image    
 
@@ -47,4 +91,22 @@ def extract_text(image, lenguage="spa", verbose=False):
     if verbose:
         print(text)
     
-    return text
+    return 
+
+
+def parametric_preprocessing(image, parameter:int):
+    
+    preprocessing_techniques = [
+        img_inversion,
+        img_grayscale,
+        img_threshold,
+        img_blur,
+        img_noise_removal,
+        img_dilation_and_erosion,
+        img_remove_borders,
+    ]
+    
+    for i in range(2 ** len(preprocessing_techniques)):
+        for j in range(len(preprocessing_techniques)):
+            if i & (1 << j):
+                image = preprocessing_techniques[j](image)

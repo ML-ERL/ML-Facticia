@@ -19,7 +19,12 @@ class OpenAIModel:
         
         self.model = "google/gemma-2-9b-it:free"
         
-    def ask_model(self, query, verbose=False):
+    def fix_text(self, text, verbose=False):
+      
+      query = f"Dado el siguiente texto que fue extraido utilizando tesseract y tiene errores por la deficiente calidad del texto: {text}. \n el texto correcto y sin formato debe ser: "
+      return self._ask_model(query, verbose)
+        
+    def _ask_model(self, query, verbose):
         
         completion = self.client.chat.completions.create(
             model=self.model,
@@ -31,7 +36,7 @@ class OpenAIModel:
             ]
         )
         
-        response = completion.choices[0].message.content
+        response = completion.choices[0].message.content.strip().split("\n\n")[0]
         
         if verbose:
             print(response)
@@ -42,52 +47,4 @@ class OpenAIModel:
 if __name__ == "__main__":
     
     llm = OpenAIModel()
-    llm.ask_model("Completa la siguiente frase: Solo el amor convierte en milagro...", verbose=True)
-    llm.ask_model("De quien es la frase 'Solo el amor convierte ...'?", verbose=True)
-    
-    
-'''
-from openai import OpenAI
-
-client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key="<OPENROUTER_API_KEY>",
-)
-
-completion = client.chat.completions.create(
-  extra_headers={
-    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
-  },
-  model="google/gemma-2-9b-it:free",
-  messages=[
-    {
-      "role": "user",
-      "content": "What is the meaning of life?"
-    }
-  ]
-)
-print(completion.choices[0].message.content)
-
-import requests
-import json
-
-response = requests.post(
-  url="https://openrouter.ai/api/v1/chat/completions",
-  headers={
-    "Authorization": "Bearer <OPENROUTER_API_KEY>",
-    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
-  },
-  data=json.dumps({
-    "model": "google/gemma-2-9b-it:free", # Optional
-    "messages": [
-      {
-        "role": "user",
-        "content": "What is the meaning of life?"
-      }
-    ]
-    
-  })
-)
-'''
+    llm.fix_text("El pero do Donel tene hambre", verbose=True)
