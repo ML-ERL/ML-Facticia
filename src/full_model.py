@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from clip import CLIPInstance
+import numpy as np
 
 from src.data_format import DataFormat, from_json
 from src.dataset_loader import get_dataset_from_file, clear
@@ -80,3 +81,100 @@ class FullModel:
 
             image_path = f"{export_path}/{image}.jpg"
             proximity[image] = self.clip_model.get_relation(image_path, texts)
+
+
+
+    def calculate_corners(self, x, y, w, h, r):
+        x, y, w, h, r = float(x), float(y), float(w), float(h), float(r)
+        r = np.deg2rad(r)
+
+        corners = np.array([
+            [-w / 2, -h / 2], 
+            [ w / 2, -h / 2],
+            [ w / 2,  h / 2],
+            [-w / 2,  h / 2]   
+        ])
+
+        rotation_matrix = np.array([
+            [np.cos(r), -np.sin(r)],
+            [np.sin(r),  np.cos(r)]
+        ])
+
+        rotated_corners = np.dot(corners, rotation_matrix.T) + [x, y]
+        return rotated_corners
+
+
+    def calculate_midpoint(self, p1, p2):
+        return (p1 + p2) / 2
+
+    def calculate_midpoints(self,corners):
+        midpoints = [
+            self.calculate_midpoint(corners[0], corners[1]),  # (x1, y1) y (x2, y2)
+            self.calculate_midpoint(corners[0], corners[3]),  # (x1, y1) y (x4, y4)
+            self.calculate_midpoint(corners[1], corners[2]),  # (x2, y2) y (x3, y3)
+            self.calculate_midpoint(corners[3], corners[2])   # (x4, y4) y (x3, y3)
+        ]
+        return midpoints
+
+    def calculate_distance(self, p1, p2):
+        return np.linalg.norm(p1 - p2)
+
+
+    def associate_bounding_boxes(self):
+        associations = {}
+        max_distance = 465
+        images = []
+        captions = []
+
+        for crop in self.cropped_images:
+            crop_xywhr = crop.xywhr
+
+            if crop.type == 2:
+                images.append({
+                    "filename": crop.filename,
+                    "x": crop_xywhr[0],
+                    "y": crop_xywhr[1],
+                    "w": crop_xywhr[2],
+                    "h": crop_xywhr[3],
+                    "r": crop_xywhr[4]
+                })
+            elif crop.type == 0:
+                captions.append({
+                    "filename": crop.filename,
+                    "x": crop_xywhr[0],
+                    "y": crop_xywhr[1],
+                    "w": crop_xywhr[2],
+                    "h": crop_xywhr[3],
+                    "r": crop_xywhr[4]
+                })
+
+
+        for img in images:
+            img_corners = self.calculate_corners(img['x'], img['y'], img['w'], img['h'], img['r'])
+            img_midpoints = self.calculate_midpoints(img_corners)
+
+            possible_captions = []
+
+            for cap in captions:
+                cap_corners = self.calculate_corners(cap['x'], cap['y'], cap['w'], cap['h'], cap['r'])
+                cap_midpoints = self.calculate_midpoints(cap_corners)
+
+                distances = [
+                    self.calculate_distance(img_midpoints[3], cap_midpoints[0]),  
+                    self.calculate_distance(img_midpoints[0], cap_midpoints[3]),  
+                    self.calculate_distance(img_midpoints[2], cap_midpoints[1]),  
+                    self.calculate_distance(img_midpoints[1], cap_midpoints[2])  
+                ]
+
+                min_cap_distance = min(distances)
+
+                if min_cap_distance <= max_distance:
+                    possible_captions.append({
+                        'caption': cap['filename'],
+                        'text_caption': cap['text'],
+                        'distance': min_cap_distance
+                    })
+
+            associations[img['filename']] = possible_captions
+
+        return associations
