@@ -1,4 +1,6 @@
-# from src.full_model import FullModel
-from src.test_path import *
+from src.full_model import FullModel
 
-list_dir()
+fullModel = FullModel(model="src/detection/best.pt")
+
+fullModel.run("./dataset/output", "./dataset/target")
+

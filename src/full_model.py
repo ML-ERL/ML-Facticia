@@ -1,7 +1,7 @@
 from ultralytics import YOLO
-from clip import CLIPInstance
 import numpy as np
 
+from src.clip import CLIPInstance
 from src.data_format import DataFormat, from_json
 from src.dataset_loader import get_dataset_from_file, clear
 from src.image_processor import extract_image
@@ -28,7 +28,10 @@ class FullModel:
             name="cf_erl",
         )
 
-    def run(self, export_path: str, data_path: str, images: list[str], load_mode=False):
+    def run(self, export_path: str, data_path: str, images: list[str]|None = None, load_mode=False):
+
+        if images is None:
+            images = os.listdir(data_path)
 
         if not load_mode:
             for image in images:
@@ -73,14 +76,25 @@ class FullModel:
         with open(f"{export_path}/{filename}/{filename}.json", "w") as f:
             json.dump({d.filename: d.to_dict() for d in data}, f, indent=4)
 
-    def get_proximity(self, export_path, images, texts):
+    def get_proximity(self, export_path, images:list[str]|None=None):
 
         proximity = {}
+        
+        if images is None:
+            images = os.listdir(export_path)
 
         for image in images:
-
-            image_path = f"{export_path}/{image}.jpg"
-            proximity[image] = self.clip_model.get_relation(image_path, texts)
+            
+            texts = [x.text for x in self.cropped_images[image] if x.type == 0 or x.type == 3]
+            image_crops = [x for x in self.cropped_images[image] if x.type == 2]
+            
+            
+            for crop in image_crops:
+                
+                image_path = f"{export_path}/{image}/{crop.filename}.jpg"
+                proximity[crop] = self.clip_model.get_relation(image_path, texts)
+                
+        return proximity
 
 
 
