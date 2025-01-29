@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import numpy as np
 
+from src.utils import *
 from src.clip import CLIPInstance
 from src.data_format import DataFormat, from_json
 from src.dataset_loader import get_dataset_from_file, clear
@@ -68,44 +69,6 @@ class FullModel:
                 
         return proximity
 
-
-
-    def calculate_corners(self, x, y, w, h, r):
-        x, y, w, h, r = float(x), float(y), float(w), float(h), float(r)
-        r = np.deg2rad(r)
-
-        corners = np.array([
-            [-w / 2, -h / 2], 
-            [ w / 2, -h / 2],
-            [ w / 2,  h / 2],
-            [-w / 2,  h / 2]   
-        ])
-
-        rotation_matrix = np.array([
-            [np.cos(r), -np.sin(r)],
-            [np.sin(r),  np.cos(r)]
-        ])
-
-        rotated_corners = np.dot(corners, rotation_matrix.T) + [x, y]
-        return rotated_corners
-
-
-    def calculate_midpoint(self, p1, p2):
-        return (p1 + p2) / 2
-
-    def calculate_midpoints(self,corners):
-        midpoints = [
-            self.calculate_midpoint(corners[0], corners[1]),  # (x1, y1) y (x2, y2)
-            self.calculate_midpoint(corners[0], corners[3]),  # (x1, y1) y (x4, y4)
-            self.calculate_midpoint(corners[1], corners[2]),  # (x2, y2) y (x3, y3)
-            self.calculate_midpoint(corners[3], corners[2])   # (x4, y4) y (x3, y3)
-        ]
-        return midpoints
-
-    def calculate_distance(self, p1, p2):
-        return np.linalg.norm(p1 - p2)
-
-
     def associate_bounding_boxes(self):
         associations = {}
         max_distance = 465
@@ -136,20 +99,20 @@ class FullModel:
 
 
         for img in images:
-            img_corners = self.calculate_corners(img['x'], img['y'], img['w'], img['h'], img['r'])
-            img_midpoints = self.calculate_midpoints(img_corners)
+            img_corners = calculate_corners(img['x'], img['y'], img['w'], img['h'], img['r'])
+            img_midpoints = calculate_midpoints(img_corners)
 
             possible_captions = []
 
             for cap in captions:
-                cap_corners = self.calculate_corners(cap['x'], cap['y'], cap['w'], cap['h'], cap['r'])
-                cap_midpoints = self.calculate_midpoints(cap_corners)
+                cap_corners = calculate_corners(cap['x'], cap['y'], cap['w'], cap['h'], cap['r'])
+                cap_midpoints = calculate_midpoints(cap_corners)
 
                 distances = [
-                    self.calculate_distance(img_midpoints[3], cap_midpoints[0]),  
-                    self.calculate_distance(img_midpoints[0], cap_midpoints[3]),  
-                    self.calculate_distance(img_midpoints[2], cap_midpoints[1]),  
-                    self.calculate_distance(img_midpoints[1], cap_midpoints[2])  
+                    calculate_distance(img_midpoints[3], cap_midpoints[0]),  
+                    calculate_distance(img_midpoints[0], cap_midpoints[3]),  
+                    calculate_distance(img_midpoints[2], cap_midpoints[1]),  
+                    calculate_distance(img_midpoints[1], cap_midpoints[2])  
                 ]
 
                 min_cap_distance = min(distances)
