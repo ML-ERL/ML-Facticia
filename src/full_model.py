@@ -30,10 +30,12 @@ class FullModel:
     def run(self, export_path: str, data_path: str, images: list[str]|None = None, load_mode=False):
 
         if images is None:
-            images = os.listdir(data_path)
+            images = [x.split('.')[-2] for x in os.listdir(data_path) if x.split('.')[-1] == 'jpg']
+            
 
         if not load_mode:
             for image in images:
+                print(f"Cropping image {image}")
                 crop_image(self.yolo_model, export_path, data_path, image)
 
         self.cropped_images = {}

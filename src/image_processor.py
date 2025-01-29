@@ -14,7 +14,7 @@ def extract_image(image_path, xywhr_coordinates):
 
 def crop_image(yolo_model, export_path: str, data_path: str, image: str):
 
-        image_path = f"{export_path}/{image}"
+        image_path = f"{data_path}/{image}.jpg"
         filename = image
 
         result = yolo_model(image_path)
