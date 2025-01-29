@@ -5,7 +5,7 @@ from transformers import CLIPProcessor, CLIPModel
 
 class CLIPInstance:
     
-    def __init__(self, model_name="openai/clip-vit-base-patch32", local_dir="local_clip"):
+    def __init__(self, model_name="openai/clip-vit-base-patch32", local_dir="src/local_clip"):
         
         self.local_dir = local_dir
         self.model_name = model_name

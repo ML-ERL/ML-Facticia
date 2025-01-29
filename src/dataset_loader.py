@@ -19,8 +19,8 @@ def get_dataset_from_file(path: str, training: int = 80, seed: int = 42):
     validation_files = files[int(len(files) * training / 100) :]
 
     # Create dataset path
-    training_path = "../dataset/training"
-    validation_path = "../dataset/validation"
+    training_path = "./dataset/training"
+    validation_path = "./dataset/validation"
 
     # Move the files to the corresponding folders
     for file in training_files:
@@ -48,14 +48,14 @@ def get_dataset_from_file(path: str, training: int = 80, seed: int = 42):
 
 def clear():
 
-    if os.path.exists("../dataset/training"):
-        shutil.rmtree("../dataset/training")
-    if os.path.exists("../dataset/validation"):
-        shutil.rmtree("../dataset/validation")
+    if os.path.exists("./dataset/training"):
+        shutil.rmtree("./dataset/training")
+    if os.path.exists("./dataset/validation"):
+        shutil.rmtree("./dataset/validation")
 
-    os.mkdir("../dataset/training")
-    os.mkdir("../dataset/training/images")
-    os.mkdir("../dataset/training/labels")
-    os.mkdir("../dataset/validation")
-    os.mkdir("../dataset/validation/images")
-    os.mkdir("../dataset/validation/labels")
+    os.mkdir("./dataset/training")
+    os.mkdir("./dataset/training/images")
+    os.mkdir("./dataset/training/labels")
+    os.mkdir("./dataset/validation")
+    os.mkdir("./dataset/validation/images")
+    os.mkdir("./dataset/validation/labels")
