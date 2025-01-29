@@ -42,9 +42,3 @@ class OpenAIModel:
             print(response)
         
         return response
-        
-        
-if __name__ == "__main__":
-    
-    llm = OpenAIModel()
-    llm.fix_text("El pero do Donel tene hambre", verbose=True)
