@@ -28,15 +28,21 @@ class OpenAIModel:
         
         completion = self.client.chat.completions.create(
             model=self.model,
-            messages=[
+            temperature=0.2,
+            max_tokens=len(query.split(" ")),
+            messages=[  
+                {
+                    "role": "system",
+                    "content": "You are a bot that helps to fix the given text without giving any other feedback, your answers does not have any conversational phrases"
+                },
                 {
                     "role": "user",
                     "content": query
-                }
+                },
             ]
         )
         
-        response = completion.choices[0].message.content.strip().split("\n\n")[0]
+        response = completion.choices[0].message.content
         
         if verbose:
             print(response)
