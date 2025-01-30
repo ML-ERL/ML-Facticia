@@ -107,24 +107,50 @@ def parametric_search(images):
 def parametric_preprocessing(image, lenguage="spa"):
     
     preprocessing_techniques = [
-        img_inversion,
-        img_grayscale,
-        img_threshold,
-        img_blur,
-        img_noise_removal,
-        img_dilation_and_erosion,
-        img_remove_borders,
+        [img_inversion],
+        [img_inversion, img_grayscale],
+        [img_inversion, img_grayscale, img_threshold],
+        [img_inversion, img_grayscale, img_threshold, img_blur],
+        [img_inversion, img_grayscale, img_threshold, img_blur, img_dilation_and_erosion],
+        [img_inversion, img_grayscale, img_threshold, img_blur, img_dilation_and_erosion, img_remove_borders],
+        [img_inversion, img_grayscale, img_threshold, img_blur, img_remove_borders],
+        [img_inversion, img_grayscale, img_threshold, img_noise_removal],
+        [img_inversion, img_grayscale, img_threshold, img_noise_removal, img_dilation_and_erosion],
+        [img_inversion, img_grayscale, img_threshold, img_noise_removal, img_dilation_and_erosion, img_remove_borders], 
+        [img_inversion, img_grayscale, img_threshold, img_noise_removal, img_remove_borders],
+        [img_grayscale],
+        [img_grayscale, img_threshold],
+        [img_grayscale, img_threshold, img_blur],
+        [img_grayscale, img_threshold, img_blur, img_dilation_and_erosion],
+        [img_grayscale, img_threshold, img_blur, img_dilation_and_erosion, img_remove_borders],
+        [img_grayscale, img_threshold, img_blur, img_remove_borders],
+        [img_grayscale, img_threshold, img_noise_removal],
+        [img_grayscale, img_threshold, img_noise_removal, img_dilation_and_erosion],
+        [img_grayscale, img_threshold, img_noise_removal, img_dilation_and_erosion, img_remove_borders], 
+        [img_grayscale, img_threshold, img_noise_removal, img_remove_borders],
+        [img_grayscale, img_blur],
+        [img_grayscale, img_blur, img_dilation_and_erosion],
+        [img_grayscale, img_blur, img_dilation_and_erosion, img_remove_borders],
+        [img_grayscale, img_blur, img_remove_borders],
+        [img_grayscale, img_noise_removal],
+        [img_grayscale, img_noise_removal, img_dilation_and_erosion],
+        [img_grayscale, img_noise_removal, img_dilation_and_erosion, img_remove_borders], 
+        [img_grayscale, img_noise_removal, img_remove_borders],
+        [img_grayscale, img_dilation_and_erosion],
+        [img_grayscale, img_dilation_and_erosion, img_remove_borders],
+        [img_grayscale, img_remove_borders],
+        
     ]
     
     results = []
     
-    for i in range(2 ** len(preprocessing_techniques)):
+    for i in range(len(preprocessing_techniques)):
         
         i_image = cv2.imread(image)
         
-        for j in range(len(preprocessing_techniques)):
-            if i & (1 << j):
-                image = preprocessing_techniques[j](image)
+        for j in range(len(preprocessing_techniques[i])):
+                
+            i_image = preprocessing_techniques[i][j](i_image)
                 
         pil_image = Image.fromarray(i_image)
         
