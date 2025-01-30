@@ -94,7 +94,17 @@ def extract_text(image, lenguage="spa", verbose=False):
     return 
 
 
-def parametric_preprocessing(image, parameter:int):
+def parametric_search(images):
+    
+    results = []
+    
+    for image in images:
+        results.append(parametric_preprocessing(image))
+        
+    return results
+
+
+def parametric_preprocessing(image, lenguage="spa"):
     
     preprocessing_techniques = [
         img_inversion,
@@ -106,7 +116,22 @@ def parametric_preprocessing(image, parameter:int):
         img_remove_borders,
     ]
     
+    results = []
+    
     for i in range(2 ** len(preprocessing_techniques)):
+        
+        i_image = cv2.imread(image)
+        
         for j in range(len(preprocessing_techniques)):
             if i & (1 << j):
                 image = preprocessing_techniques[j](image)
+                
+        pil_image = Image.fromarray(i_image)
+        
+        config = "--psm 6 --oem 1"
+    
+        text = pytesseract.image_to_string(pil_image, lang=lenguage, config=config)
+        
+        results.append(text)
+        
+    return results
