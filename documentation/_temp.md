@@ -13,15 +13,19 @@ Tesseract es un modelo actual que implementa técnicas que son parte del Estado 
 
 ## Resultados
 
-Se realizaron varias pruebas para determinar que preprocesamientos daban mejores resultados con Tesseract. A continuación los resultados obtenidos:
+Se realizaron varias pruebas para determinar que preprocesamientos daban mejores resultados en la posterior extracción del texto utilizando Tesseract
 
 * insertar tabla
 
-Por este motivo se decidió utilizar la combinación de las técnicas ... 
+en ambos casos los mejores resultados para la media de los procesamientos se obtuvo aplicando solamente una invirsión en los colores y aplicando escala de grises. La combinación de estas técnicas es particularmente útil cuando existen fondos complejos y textos degradados, en nuestro caso, la antiguedad de los documentos los hace propensos a estas características.
+
+## Alternativas a Tesseract
+
+Otros modelos que resolvían el mismo problema de Tesseract fueron considerados, este es el caso de OCRopus que fue uno de los modelos gratuitos encontrados durante la investigación, sin embargo, este no fue utilizado debido al tiempo que tomaría su entrenamiento teniendo en cuenta que sus modelos pre-entrenados no tienen soporte para el idioma español. Existen alternativas como Google Cloud Vision o Amazon Textract que brindan muy buenos resultados pero son de pago.
 
 ## Mejorar los resultados usando un llm
 
-Por la naturaleza de los datos, los modelos de reconocimiento de texto en imagenes suelen tener algunos problemas, es por ello que proponemos como parte de nuestra solución mejorar los resultados obtenidos utilizando un modelo de lenguaje para esta tarea.
+Por la naturaleza de los datos, los modelos de reconocimiento de texto en imagenes suelen tener algunos problemas, es por ello que proponemos como parte de nuestra solución mejorar los resultados obtenidos utilizando un modelo de lenguaje para esta tarea. Realizamos una observación para determinar si reconstruyendo el texto obteníamos resultados más cercanos al texto original extraído de los documentos. El modelo de lenguaje, genera textos coherentes pero que difieren un poco más del texto original que la extracción con Tesseract, sin embargo, enriquece el texto agregando fragmentos faltantes, y da un sentido al texto al considerar fragmentos faltantes en la imagen. Como modelo para reconstruir lo que se pudo extraer es deficiente, pero para la recuperación tiene un funcionamiento adecuado.
 
 Notas:
 
