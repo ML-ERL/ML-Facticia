@@ -29,7 +29,7 @@ class OpenAIModel:
         completion = self.client.chat.completions.create(
             model=self.model,
             temperature=0.2,
-            max_tokens=len(query.split(" ")),
+            max_tokens=len(query.split(" ")) + 50,
             messages=[  
                 {
                     "role": "system",
