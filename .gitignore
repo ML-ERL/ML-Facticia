@@ -1,5 +1,8 @@
 .env
 
+*runs
 *local_clip
+*local_sam
 *__pycache__
 
+sam
