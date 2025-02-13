@@ -6,6 +6,7 @@ from src.clip import CLIPInstance
 from src.data_format import DataFormat, from_json
 from src.dataset_loader import get_dataset_from_file, clear
 from src.image_processor import crop_image
+from src.text_postprocessor import OpenAIModel
 
 import os, shutil
 
@@ -16,6 +17,7 @@ class FullModel:
 
         self.yolo_model = YOLO(model)
         self.clip_model = CLIPInstance()
+        self.llm = OpenAIModel()
 
     def train(self, data_path="./dataset/facticia", dataset="./dataset/data.yaml"):
 
@@ -54,7 +56,7 @@ class FullModel:
 
             for image in images:
                 print(f"Cropping image {image}")
-                crop_image(self.yolo_model, export_path, data_path, image)
+                crop_image(self.yolo_model, export_path, data_path, image, self.llm)
 
         self.cropped_images = {}
 

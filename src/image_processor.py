@@ -15,7 +15,7 @@ def extract_image(original_image, bbox):
     return cropped_img
 
 
-def crop_image(yolo_model, export_path: str, data_path: str, image: str):
+def crop_image(yolo_model, export_path: str, data_path: str, image: str, llm):
 
     image_path = f"{data_path}/{image}.jpg"
     filename = image
@@ -43,6 +43,7 @@ def crop_image(yolo_model, export_path: str, data_path: str, image: str):
     for d in data:
         if d.type == 3 or d.type == 0:
             d.text = extract_text(f"{export_path}/{filename}/{d.filename}.jpg")
+            d.text = llm.fix_text(d.text)
 
     with open(f"{export_path}/{filename}/{filename}.json", "w") as f:
         json.dump({d.filename: d.to_dict() for d in data}, f, indent=4)
