@@ -5,25 +5,24 @@ Este proyecto tiene como objetivo digitalizar la colección facticia de Emilio R
 - **Detección de Objetos:** YOLO v8 para identificar y recortar imágenes de interés.
 - **OCR:** Tesseract para extraer textos de las imágenes.
 - **Similitud Imagen-Texto:** CLIP para emparejar imágenes con sus descripciones.
-- **Segmentación Avanzada:** SAM para preprocesamientos específicos de imágenes complejas.
 
 ## Estructura del Proyecto
 
 El proyecto cuenta con 4 carpetas principales:
 
-1. **dataset**: Almacena los datos de entrenamiento en caso de existir, además de la carpeta por defecto con las imágenes a procesar y la ubicación para almacenar los crops
-2. **experimentation**: Contiene los procesamientos realizados para determinar las mejores alternativas de preprocesamiento para Tesseract
-3. **src**: Contiene todos los archivos de la lógica del programa, entre ellos la definición de la clase full model que integra los diversos modelos y cada una de las implementaciones específicas
-4. **training models**: Contiene la información de los artículos consultados para el desarrollo de este proyecto
+- **dataset**: Almacena los datos de entrenamiento en caso de existir, además de la carpeta por defecto con las imágenes a procesar y la ubicación para almacenar los crops
+- **experimentation**: Contiene los procesamientos realizados para determinar las mejores alternativas de preprocesamiento para Tesseract
+- **src**: Contiene todos los archivos de la lógica del programa, entre ellos la definición de la clase full model que integra los diversos modelos y cada una de las implementaciones específicas
+- **training models**: Contiene la información de los artículos consultados para el desarrollo de este proyecto
 
 En el directorio raíz podemos encontrar:
 
-1. **app.py**: punto de entrada a la aplicación de streamlit
-2. **main.py**: punto de entrada a la aplicación de consola
+- **app.py**: punto de entrada a la aplicación de streamlit
+- **main.py**: punto de entrada a la aplicación de consola
 
 ## Uso
 
-1. **Instalación:**  
+**Instalación:**  
    Instalar las dependencias listadas en `requirements.txt`.  
    ```bash
    pip install -r requirements.txt
@@ -32,8 +31,10 @@ En el directorio raíz podemos encontrar:
 ## Streamlit
 
 [Drive con imágenes de ejemplo](https://drive.google.com/drive/folders/1mGBljfrRwHWtKwOliC1mbVcq7K0LCMV9?usp=sharing)
+
 [Sreamlit](https://ml-facticia.streamlit.app/)
 
+Pasos a seguir:
 1. Presionar el botón **Upload File** y seleccionar el archivo a procesar
 2. Se muestra una previzualización de la imagen
 3. Se ejecuta el modelo de detección y se muestran los recortes extraidos
